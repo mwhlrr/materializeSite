@@ -2,13 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
-const pool = require('./db');
+const pool = require('./config/db');
+const productRoutes = require('./routes/productRoutes');
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/uploads', express.static('uploads')); // Serve uploaded files statically
 app.use('/api/users', userRoutes);
+app.use('/api/product', productRoutes); // Use the new route
 
 // Route to create a new user
 app.post('/api/users', async (req, res) => {
