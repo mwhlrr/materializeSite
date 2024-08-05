@@ -104,7 +104,7 @@ const Product = () => {
               <td>{item.id}</td>
               <td>{item.name}</td>
               <td>{new Date(item.date_created).toLocaleString()}</td>
-              <td>{item.price}</td>
+              <td>${item.price}</td>
               <td>{item.rating}</td>
               <td>{item.likes}</td>
               <td>

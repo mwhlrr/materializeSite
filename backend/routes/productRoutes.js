@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const router = express.Router();
-const db = require('../config/db');
+const pool = require('../config/db'); // Use the promise-based pool
 
 // Set up multer for file uploads
 const storage = multer.diskStorage({
@@ -27,23 +27,32 @@ const upload = multer({
 });
 
 // Fetch all product items
-router.get('/', (req, res) => {
-  db.query('SELECT * FROM productItems', (err, results) => {
-    if (err) throw err;
+router.get('/', async (req, res) => {
+  try {
+    const [results] = await pool.query('SELECT * FROM productItems');
     res.json(results);
-  });
+  } catch (err) {
+    console.error('Error fetching product items:', err);
+    res.status(500).json({ error: 'Failed to fetch product items' });
+  }
 });
 
 // Add a new product item
-router.post('/', upload.fields([{ name: 'photos', maxCount: 5 }, { name: 'video', maxCount: 1 }]), (req, res) => {
+router.post('/', upload.fields([{ name: 'photos', maxCount: 5 }, { name: 'video', maxCount: 1 }]), async (req, res) => {
   const { name, price, rating, likes } = req.body;
   const photos = req.files['photos'] ? req.files['photos'].map(file => file.filename) : [];
   const video = req.files['video'] ? req.files['video'][0].filename : null;
 
-  db.query('INSERT INTO productItems (name, price, rating, likes, photos, video) VALUES (?, ?, ?, ?, ?, ?)', [name, price, rating, likes, JSON.stringify(photos), video], (err, result) => {
-    if (err) throw err;
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO productItems (name, price, rating, likes, photos, video) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, price, rating, likes, JSON.stringify(photos), video]
+    );
     res.status(201).json({ message: 'Product item added successfully', itemId: result.insertId });
-  });
+  } catch (err) {
+    console.error('Error adding product item:', err);
+    res.status(500).json({ error: 'Failed to add product item' });
+  }
 });
 
 module.exports = router;

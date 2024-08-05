@@ -7,6 +7,7 @@ import Contact from './components/Contact';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import Database from './components/Database';
+import Register from './components/Register';
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/database" element={<Database />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </>
   );
