@@ -38,14 +38,18 @@ router.get('/', async (req, res) => {
 });
 
 // Add a new product item
-router.post('/', upload.fields([{ name: 'photos', maxCount: 5 }, { name: 'video', maxCount: 1 }]), async (req, res) => {
+router.post('/', upload.fields([{ name: 'photo', maxCount: 5 }, { name: 'video', maxCount: 1 }]), async (req, res) => {
   const { name, price, rating, likes } = req.body;
-  const photos = req.files['photos'] ? req.files['photos'].map(file => file.filename) : [];
+  const photos = req.files['photo'] ? req.files['photo'].map(file => file.filename) : [];
   const video = req.files['video'] ? req.files['video'][0].filename : null;
+  
+  if (photos.length < 1) {
+    return res.status(400).json({ error: 'At least one photo is required' });
+  }
 
   try {
     const [result] = await pool.query(
-      'INSERT INTO productItems (name, price, rating, likes, photos, video) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO productItems (name, price, rating, likes, photo, video) VALUES (?, ?, ?, ?, ?, ?)',
       [name, price, rating, likes, JSON.stringify(photos), video]
     );
     res.status(201).json({ message: 'Product item added successfully', itemId: result.insertId });
