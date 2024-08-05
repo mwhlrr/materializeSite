@@ -12,7 +12,6 @@ import Register from './components/Register';
 const AppRoutes = () => {
   return (
     <>
-      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
